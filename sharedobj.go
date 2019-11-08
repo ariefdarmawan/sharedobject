@@ -1,4 +1,4 @@
-package knot
+package sharedobject
 
 import (
 	"sync"
