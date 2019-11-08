@@ -6,7 +6,7 @@ import (
 
 // SharedData is shared data
 type SharedData struct {
-	lock sync.RWMutex
+	lock *sync.RWMutex
 	data map[string]interface{}
 }
 
