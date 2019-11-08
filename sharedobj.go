@@ -6,13 +6,14 @@ import (
 
 // SharedData is shared data
 type SharedData struct {
-	sync.RWMutex
+	lock sync.RWMutex
 	data map[string]interface{}
 }
 
 // NewSharedData initiate new SharedData
 func NewSharedData() *SharedData {
 	d := &SharedData{}
+	d.lock = new(sync.RWMutex)
 	d.data = map[string]interface{}{}
 	return d
 }
@@ -23,12 +24,12 @@ func (s *SharedData) Get(key string, def interface{}) interface{} {
 	var b bool
 	hasData := false
 
-	s.RLock()
+	s.lock.RLock()
 	if s.data != nil {
 		hasData = true
 		out, b = s.data[key]
 	}
-	s.RUnlock()
+	s.lock.RUnlock()
 
 	if hasData {
 		if b {
@@ -43,28 +44,28 @@ func (s *SharedData) Get(key string, def interface{}) interface{} {
 
 // Set data with given key and value
 func (s *SharedData) Set(key string, value interface{}) {
-	s.Lock()
+	s.lock.Lock()
 	if s.data == nil {
 		s.data = map[string]interface{}{}
 	}
 	s.data[key] = value
-	s.Unlock()
+	s.lock.Unlock()
 }
 
 // Remove data with given key
 func (s *SharedData) Remove(key string) {
-	s.Lock()
+	s.lock.Lock()
 	delete(s.data, key)
-	s.Unlock()
+	s.lock.Unlock()
 }
 
 // Count data
 func (s *SharedData) Count() int {
 	out := 0
-	s.RLock()
+	s.lock.RLock()
 	if s.data != nil {
 		out = len(s.data)
 	}
-	s.RUnlock()
+	s.lock.RUnlock()
 	return out
 }
